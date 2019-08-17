@@ -1,3 +1,4 @@
+const Base = require('./Base');
 /**
  * QueryBuilderProxy
  * This Class intercep get property access, determines if a method is related with some database operation and
@@ -5,23 +6,11 @@
  */
 
 function QueryBuilderProxy(instances = null) {
-  console.log('instance', instances);
-  if (!instances) {
-    // console.log('NO PUEDE ENTRAR ACA');
-    this.instance = null;
-    this.internalHandler = null;
-    this.instancesAndMethods = null;
-    this.attributes = null;
-    this.queryDictionary = null;
-    return;
-  }
-  this.instances = instances;
+  Base.call(this, instances);
   this.internalHandler = null;
-  this.instancesAndMethods = this.setInstancesAndMethods(instances);
-  this.attributes = this.getAttributes(this.instances);
-  this.queryDictionary = this.setQueryActions(this.instancesAndMethods);
-  this.setInternalHandler = this.setInternalHandler.bind(this);
 }
+
+QueryBuilderProxy.prototype = Object.create(Base.prototype);
 
 /**
  * Expect an array of instances
@@ -118,72 +107,6 @@ QueryBuilderProxy.prototype.setProxy = function setProxyToInstance(target) {
 
 QueryBuilderProxy.prototype.getQueryDictionary = function resolveQueryDictionary() {
   return this.queryDictionary;
-};
-
-/**
- * Return the prototype of an instance
- */
-QueryBuilderProxy.prototype.getPrototypesOfInstances = function resolvePrototypeOfInstances(
-  instance
-) {
-  return Reflect.getPrototypeOf(instance);
-};
-
-/**
- * Returns the property descriptor of the instances prototype.
- */
-QueryBuilderProxy.prototype.getInternalPropertiesDescriptorOfPrototype = function resolveInternalProperties(
-  instancePrototype
-) {
-  return Object.getOwnPropertyDescriptors(instancePrototype);
-};
-
-/**
- * Returns the entries (keys, values) on the prototype of the instance
- */
-QueryBuilderProxy.prototype.getEntriesOfPrototype = function resolveEntriesOfPrototype(
-  instancePrototype
-) {
-  return Object.entries(instancePrototype).reduce((acc, item) => {
-    acc.push(...item);
-    return acc;
-  }, []);
-};
-
-/**
- * Returns only the names of the methods of the instance
- */
-QueryBuilderProxy.prototype.filterOnlyStrings = function resolveStringsMethod(
-  instancePrototypeEntries
-) {
-  return instancePrototypeEntries.filter(item => typeof item === 'string');
-};
-
-/**
- * Return the methods of the instance
- */
-QueryBuilderProxy.prototype.filterByMethodNames = function resolveMethodNames(
-  instancePrototypeEntries
-) {
-  return instancePrototypeEntries.filter((_, idx) => idx !== 0);
-};
-
-/**
- * Returns an object that setup the instance name and the methods names.
- */
-QueryBuilderProxy.prototype.setInstancesAndMethods = function setupInstancesAndMethodsToAnObject(
-  instances
-) {
-  const instancesNamesAndMethods = instances.map(item => {
-    const thePrototype = this.getPrototypesOfInstances(item);
-    const theInternalProperties = this.getInternalPropertiesDescriptorOfPrototype(thePrototype);
-    const descriptorEntries = this.getEntriesOfPrototype(theInternalProperties);
-    const filteredByPropertiesNames = this.filterOnlyStrings(descriptorEntries);
-    const filterByMethodNames = this.filterByMethodNames(filteredByPropertiesNames);
-    return { instanceName: item.constructor.name, methods: [...filterByMethodNames] };
-  });
-
-  return instancesNamesAndMethods;
 };
 
 /**
