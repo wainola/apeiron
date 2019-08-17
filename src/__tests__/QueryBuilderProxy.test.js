@@ -33,4 +33,14 @@ describe('QueryBuilder test', () => {
     const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
     expect(queryBuilder.internalHandler).toBe(null);
   });
+  it.only('should return a proxy provided string that represent the names of the class to proxy', () => {
+    const address = new Address();
+    const client = new Client();
+    const customer = new Customer();
+    const invoice = new Invoice();
+
+    const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
+
+    console.log(queryBuilder);
+  });
 });

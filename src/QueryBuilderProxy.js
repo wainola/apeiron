@@ -81,7 +81,6 @@ QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler()
  * Returns a Proxy of the instance passed
  */
 QueryBuilderProxy.prototype.setProxy = function setProxyToInstance(target) {
-  const yy = new Proxy(target, this.setInternalHandler());
   return new Proxy(target, this.setInternalHandler());
 };
 
@@ -136,23 +135,6 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
       return query;
     default:
       null;
-  }
-  return null;
-};
-
-/**
- * Return the attributes of the instances passed on the proxy
- * @param {Object} originalInstance
- * @returns [attributesName] array of the names of the attributes inside the instance
- */
-QueryBuilderProxy.prototype.getAttributes = function resolveAttributesByInstances(
-  originalInstance
-) {
-  const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
-  // console.log('hasattrs', originalInstance);
-  if (hasAttributeProperty) {
-    const attrs = this.getAtrributesFromInstanceCollection(originalInstance);
-    return attrs;
   }
   return null;
 };
@@ -279,21 +261,6 @@ QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumn
     acc += `${item}`;
     return acc;
   }, 'SELECT ');
-};
-
-QueryBuilderProxy.prototype.getAtrributesFromInstanceCollection = function resolveAttributesFromInstanceCollection(
-  instances
-) {
-  // console.log('INST', instances[0]);
-  if (instances.length > 1) {
-    return instances.map(item => ({
-      instanceName: item.constructor.name,
-      attributes: [...item.attributes]
-    }));
-  }
-  const [inst] = instances;
-  const { attributes } = inst;
-  return [{ instanceName: inst.constructor.name, attributes: [...attributes] }];
 };
 
 module.exports = QueryBuilderProxy;
