@@ -5,13 +5,14 @@ function Base(instances) {
     }
     this.internalHandler = null;
     this.instancesAndMethods = this.setInstancesAndMethods(instances);
+    this.attributes = this.getAttributes(instances);
   } catch (error) {
     return error;
   }
 }
 
 Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(instances) {
-  return instances.map(item => {
+  return instances.reduce((acc, item) => {
     const thePrototype = this.getPrototypesOfInstances(item);
 
     const theInternalProperties = this.getInternalPropertiesDescriptorOfPrototype(thePrototype);
@@ -22,8 +23,14 @@ Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(inst
 
     const filterByMethodNames = this.filterByMethodNames(filteredByPropertiesNames);
 
-    return { instanceName: item.constructor.name, methods: [...filterByMethodNames] };
-  });
+    const instanceName = item.constructor.name;
+    return {
+      ...acc,
+      [instanceName]: {
+        methods: [...filterByMethodNames]
+      }
+    };
+  }, {});
 };
 
 Base.prototype.getPrototypesOfInstances = function resolvePrototypeOfInstances(instance) {
@@ -49,6 +56,35 @@ Base.prototype.filterOnlyStrings = function resolveStringsMethod(instancePrototy
 
 Base.prototype.filterByMethodNames = function resolveMethodNames(instancePrototypeEntries) {
   return instancePrototypeEntries.filter((_, idx) => idx !== 0);
+};
+
+Base.prototype.getAttributes = function resolveAttributesByInstances(originalInstance) {
+  const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
+  // console.log('hasattrs', originalInstance);
+  try {
+    if (hasAttributeProperty) {
+      const attrs = this.getAtrributesFromInstanceCollection(originalInstance);
+      return attrs;
+    }
+    throw new Error('Instances class must have attributes Set');
+  } catch (error) {
+    return error;
+  }
+};
+
+Base.prototype.getAtrributesFromInstanceCollection = function resolveAttributesFromInstanceCollection(
+  instances
+) {
+  console.log('INST', instances);
+  if (instances.length > 1) {
+    return instances.map(item => ({
+      instanceName: item.constructor.name,
+      attributes: [...item.attributes]
+    }));
+  }
+  const [inst] = instances;
+  const { attributes } = inst;
+  return [{ instanceName: inst.constructor.name, attributes: [...attributes] }];
 };
 
 module.exports = Base;
