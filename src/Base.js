@@ -5,14 +5,13 @@ function Base(instances) {
     }
     this.internalHandler = null;
     this.instancesAndMethods = this.setInstancesAndMethods(instances);
-    this.attributes = this.getAttributes(instances);
   } catch (error) {
     return error;
   }
 }
 
 Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(instances) {
-  return instances.reduce((acc, item) => {
+  const instancesSetup = instances.reduce((acc, item) => {
     const thePrototype = this.getPrototypesOfInstances(item);
 
     const theInternalProperties = this.getInternalPropertiesDescriptorOfPrototype(thePrototype);
@@ -31,6 +30,8 @@ Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(inst
       }
     };
   }, {});
+  const resolveInstancesAndAttributes = this.getAttributes(instances, instancesSetup);
+  return resolveInstancesAndAttributes;
 };
 
 Base.prototype.getPrototypesOfInstances = function resolvePrototypeOfInstances(instance) {
@@ -58,13 +59,21 @@ Base.prototype.filterByMethodNames = function resolveMethodNames(instancePrototy
   return instancePrototypeEntries.filter((_, idx) => idx !== 0);
 };
 
-Base.prototype.getAttributes = function resolveAttributesByInstances(originalInstance) {
+Base.prototype.getAttributes = function resolveAttributesByInstances(
+  originalInstance,
+  instancesAndMethods
+) {
+  // console.log('originalInstances', originalInstance);
   const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
   // console.log('hasattrs', originalInstance);
   try {
     if (hasAttributeProperty) {
       const attrs = this.getAtrributesFromInstanceCollection(originalInstance);
-      return attrs;
+      const newInstancesAndMethods = this.setupAttributesOnInstancesAndMethodsTree(
+        attrs,
+        instancesAndMethods
+      );
+      return newInstancesAndMethods;
     }
     throw new Error('Instances class must have attributes Set');
   } catch (error) {
@@ -75,7 +84,6 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(originalIns
 Base.prototype.getAtrributesFromInstanceCollection = function resolveAttributesFromInstanceCollection(
   instances
 ) {
-  console.log('INST', instances);
   if (instances.length > 1) {
     return instances.map(item => ({
       instanceName: item.constructor.name,
@@ -85,6 +93,24 @@ Base.prototype.getAtrributesFromInstanceCollection = function resolveAttributesF
   const [inst] = instances;
   const { attributes } = inst;
   return [{ instanceName: inst.constructor.name, attributes: [...attributes] }];
+};
+
+Base.prototype.setupAttributesOnInstancesAndMethodsTree = function resolveAttributesOnInstancesAndMethodsTree(
+  attributes,
+  instancesAndMethods
+) {
+  const newInstancesAndMethods = attributes.reduce((acc, item) => {
+    const singleInstanceData = instancesAndMethods[item.instanceName];
+    acc = {
+      ...acc,
+      [item.instanceName]: {
+        ...singleInstanceData,
+        attributes: [...item.attributes]
+      }
+    };
+    return acc;
+  }, {});
+  return newInstancesAndMethods;
 };
 
 module.exports = Base;

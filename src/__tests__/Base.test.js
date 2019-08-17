@@ -20,14 +20,17 @@ describe('Base class test', () => {
       expect(Array.isArray(instancesAndMethods[item].methods)).toBe(true);
     });
   });
-  it.only('should setup the attributes for all the instances', () => {
+  it('should setup the attributes for all the instances', () => {
     const address = new Address();
     const client = new Client();
     const customer = new Customer();
     const invoice = new Invoice();
 
-    const base = new Base([address, client, customer, invoice]);
+    const { instancesAndMethods } = new Base([address, client, customer, invoice]);
 
-    console.log('base:', base.instancesAndMethods);
+    const instancesKeys = Object.keys(instancesAndMethods);
+    instancesKeys.forEach(item =>
+      expect(Array.isArray(instancesAndMethods[item].attributes)).toBe(true)
+    );
   });
 });
