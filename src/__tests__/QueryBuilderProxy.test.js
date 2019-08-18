@@ -1,3 +1,4 @@
+const util = require('util');
 const QueryBuilderProxy = require('../QueryBuilderProxy');
 const Base = require('../Base');
 const Address = require('./mockClasses/Address');
@@ -33,7 +34,7 @@ describe('QueryBuilder test', () => {
     const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
     expect(queryBuilder.internalHandler).toBe(null);
   });
-  it.only('should return a proxy provided string that represent the names of the class to proxy', () => {
+  it.only('should return a proxy provided string that represent the name of the class to proxy', () => {
     const address = new Address();
     const client = new Client();
     const customer = new Customer();
@@ -41,6 +42,13 @@ describe('QueryBuilder test', () => {
 
     const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
 
-    console.log(queryBuilder);
+    const clientProxied = queryBuilder.setProxy('client');
+    const invoiceProxied = queryBuilder.setProxy('invoice');
+    expect(util.types.isProxy(clientProxied)).toBe(true);
+    expect(util.types.isProxy(invoiceProxied)).toBe(true);
   });
+  it('should build a insertion query if the proxied class use the insert method', () => {});
+  it('should build a updation query if the proxied class use the update method', () => {});
+  it('should build a deletion query if the proxied class use the delete method', () => {});
+  it('should build a selection query if the proxied class use the get method', () => {});
 });

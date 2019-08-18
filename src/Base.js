@@ -26,7 +26,8 @@ Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(inst
     return {
       ...acc,
       [instanceName]: {
-        methods: [...filterByMethodNames]
+        methods: [...filterByMethodNames],
+        instance: item
       }
     };
   }, {});
@@ -110,6 +111,12 @@ Base.prototype.setupAttributesOnInstancesAndMethodsTree = function resolveAttrib
     return acc;
   }, {});
   return newInstancesAndMethods;
+};
+
+Base.prototype.validateInstance = function resolveInstanceBasedOnString(instanceName) {
+  const instancesKeys = Object.keys(this.instancesAndMethods);
+  const [namedInstance] = instancesKeys.filter(item => item.toLowerCase().includes(instanceName));
+  return namedInstance;
 };
 
 module.exports = Base;

@@ -80,8 +80,10 @@ QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler()
 /**
  * Returns a Proxy of the instance passed
  */
-QueryBuilderProxy.prototype.setProxy = function setProxyToInstance(target) {
-  return new Proxy(target, this.setInternalHandler());
+QueryBuilderProxy.prototype.setProxy = function setProxyToInstance(instanceName) {
+  const validateInstanceParam = this.validateInstance(instanceName);
+  const { instance } = this.instancesAndMethods[validateInstanceParam];
+  return new Proxy(instance, this.setInternalHandler());
 };
 
 /**
