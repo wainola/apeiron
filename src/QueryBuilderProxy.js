@@ -216,38 +216,6 @@ QueryBuilderProxy.prototype.generateListForQuery = function resolveListQuery(dat
   }, '');
 };
 
-QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumnsSentences(
-  dataToInsert
-) {
-  const typeOfData = this.checkDataType(dataToInsert);
-  if (typeOfData !== 'array') {
-    const foldedEntries = Object.entries(dataToInsert);
-    const lastItemStringify = JSON.stringify(this.getLastItemOfArray(foldedEntries)[0]);
-    return foldedEntries.reduce((acc, item) => {
-      const itemStringified = JSON.stringify(item);
-      if (itemStringified !== lastItemStringify) {
-        // console.log(item);
-        acc += `${item[0]}='${item[1]}', `;
-        return acc;
-      }
-
-      acc += `${item[0]}='${item[1]}'`;
-      return acc;
-    }, 'SET ');
-  }
-
-  const [lastItem] = this.getLastItemOfArray(dataToInsert);
-  return dataToInsert.reduce((acc, item) => {
-    if (item !== lastItem) {
-      acc += `${item}, `;
-      return acc;
-    }
-
-    acc += `${item}`;
-    return acc;
-  }, 'SELECT ');
-};
-
 /**
  * Returns the query to use on the database instance
  * @param string typeOfQuery => insert, update, delete, get
@@ -264,7 +232,6 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
   const [dataPassed] = dataToInsert;
   const dataKeys = Object.keys(dataPassed);
   const attributesQuery = this.buildAttributesQuery(attributes, dataKeys);
-  console.log('attr', attributes)
   const parentAttributes = `(${attributesQuery})`;
   let data;
   let id;
@@ -298,6 +265,38 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
       null;
   }
   return null;
+};
+
+QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumnsSentences(
+  dataToInsert
+) {
+  const typeOfData = this.checkDataType(dataToInsert);
+  if (typeOfData !== 'array') {
+    const foldedEntries = Object.entries(dataToInsert);
+    const lastItemStringify = JSON.stringify(this.getLastItemOfArray(foldedEntries)[0]);
+    return foldedEntries.reduce((acc, item) => {
+      const itemStringified = JSON.stringify(item);
+      if (itemStringified !== lastItemStringify) {
+        // console.log(item);
+        acc += `${item[0]}='${item[1]}', `;
+        return acc;
+      }
+
+      acc += `${item[0]}='${item[1]}'`;
+      return acc;
+    }, 'SET ');
+  }
+
+  const [lastItem] = this.getLastItemOfArray(dataToInsert);
+  return dataToInsert.reduce((acc, item) => {
+    if (item !== lastItem) {
+      acc += `${item}, `;
+      return acc;
+    }
+
+    acc += `${item}`;
+    return acc;
+  }, 'SELECT ');
 };
 
 module.exports = QueryBuilderProxy;
