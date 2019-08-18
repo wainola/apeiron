@@ -132,7 +132,6 @@ QueryBuilderProxy.prototype.buildAttributesQuery = function resolveAttributesStr
   attributes,
   keysOfDataPassed
 ) {
-  console.log('attrs and keys::', attributes, keysOfDataPassed);
   const attributesFiltered = attributes.reduce((acc, item) => {
     const index = keysOfDataPassed.indexOf(item);
     const elem = keysOfDataPassed[index];

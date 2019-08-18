@@ -59,7 +59,7 @@ describe('QueryBuilder test', () => {
       name: 'john',
       lastname: 'doe',
       email: 'john@doe.com',
-      fk_adrress_id: 1
+      fk_address_id: 1
     });
     console.log('insertQuery', insertionQuery);
     const exps = `insert into client (name, lastname, email, fk_address_id) values ('john', 'doe', 'john@doe.com', '1') returning *;`
