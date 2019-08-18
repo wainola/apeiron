@@ -62,6 +62,8 @@ describe('QueryBuilder test', () => {
       fk_adrress_id: 1
     });
     console.log('insertQuery', insertionQuery);
+    const exps = `insert into client (name, lastname, email, fk_address_id) values ('john', 'doe', 'john@doe.com', '1') returning *;`
+    expect(insertionQuery.toLowerCase()).toEqual(exps)
   });
   it('should build a updation query if the proxied class use the update method', () => {});
   it('should build a deletion query if the proxied class use the delete method', () => {});

@@ -132,7 +132,7 @@ QueryBuilderProxy.prototype.buildAttributesQuery = function resolveAttributesStr
   attributes,
   keysOfDataPassed
 ) {
-  // console.log('attrs and keys::', attributes, keysOfDataPassed);
+  console.log('attrs and keys::', attributes, keysOfDataPassed);
   const attributesFiltered = attributes.reduce((acc, item) => {
     const index = keysOfDataPassed.indexOf(item);
     const elem = keysOfDataPassed[index];
@@ -262,19 +262,16 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
   instanceName,
   attributes = []
 ]) {
-  // console.log('typeOfQuery', attributes);
   const [dataPassed] = dataToInsert;
   const dataKeys = Object.keys(dataPassed);
   const attributesQuery = this.buildAttributesQuery(attributes, dataKeys);
-  console.log('attributes', attributesQuery, dataKeys);
+  console.log('attr', attributes)
   const parentAttributes = `(${attributesQuery})`;
-  const { action } = typeOfQuery;
-  const [tableName] = instanceName;
   let data;
   let id;
 
   let processedDataToInsert;
-  if (action !== 'delete') {
+  if (typeOfQuery !== 'delete') {
     [data, id] = dataToInsert;
     processedDataToInsert = this.processDataByInspection(data);
   } else {
@@ -282,21 +279,21 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
   }
 
   let query;
-  switch (action) {
+  switch (typeOfQuery) {
     case 'insert':
-      query = `INSERT INTO ${tableName} ${parentAttributes} VALUES (${processedDataToInsert}) RETURNING *;`;
+      query = `INSERT INTO ${instanceName} ${parentAttributes} VALUES (${processedDataToInsert}) RETURNING *;`;
       return query;
     case 'update':
       const setColumnsSentences = this.generateColumnsSentences(data);
-      query = `UPDATE ${tableName} ${setColumnsSentences} WHERE id = '${id}';`;
+      query = `UPDATE ${instanceName} ${setColumnsSentences} WHERE id = '${id}';`;
       return query;
     case 'delete':
-      query = `DELETE FROM ${tableName} WHERE id = '${id}';`;
+      query = `DELETE FROM ${instanceName} WHERE id = '${id}';`;
       // console.log('QUERY', query);
       return query;
     case 'get':
       const selectColumnsSentences = this.generateColumnsSentences(data);
-      query = `${selectColumnsSentences} FROM ${tableName} WHERE id = '${id}';`;
+      query = `${selectColumnsSentences} FROM ${instanceName} WHERE id = '${id}';`;
       return query;
     default:
       null;
