@@ -34,7 +34,7 @@ describe('QueryBuilder test', () => {
     const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
     expect(queryBuilder.internalHandler).toBe(null);
   });
-  it.only('should return a proxy provided string that represent the name of the class to proxy', () => {
+  it('should return a proxy provided string that represent the name of the class to proxy', () => {
     const address = new Address();
     const client = new Client();
     const customer = new Customer();
@@ -47,7 +47,22 @@ describe('QueryBuilder test', () => {
     expect(util.types.isProxy(clientProxied)).toBe(true);
     expect(util.types.isProxy(invoiceProxied)).toBe(true);
   });
-  it('should build a insertion query if the proxied class use the insert method', () => {});
+  it.only('should build a insertion query if the proxied class use the insert method', async () => {
+    const address = new Address();
+    const client = new Client();
+    const customer = new Customer();
+    const invoice = new Invoice();
+
+    const queryBuilder = new QueryBuilderProxy([address, client, customer, invoice]);
+    const clientProxied = queryBuilder.setProxy('client');
+    const insertionQuery = await clientProxied.insert({
+      name: 'john',
+      lastname: 'doe',
+      email: 'john@doe.com',
+      fk_adrress_id: 1
+    });
+    console.log('insertQuery', insertionQuery);
+  });
   it('should build a updation query if the proxied class use the update method', () => {});
   it('should build a deletion query if the proxied class use the delete method', () => {});
   it('should build a selection query if the proxied class use the get method', () => {});

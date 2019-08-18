@@ -16,7 +16,8 @@ QueryBuilderProxy.prototype = Object.create(Base.prototype);
  * Return a handler object with a get trap to intersect the property accesor of an instance
  */
 QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler() {
-  const { queryDictionary, generateQuery, instancesAndMethods, attributes } = this;
+  console.log('this:', this);
+  const { instancesAndMethods, generateQuery } = this;
   // console.log('queryDic', queryDictionary, instancesAndMethods, attributes);
   const self = this;
 
@@ -29,43 +30,26 @@ QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler()
         if (typeof propName !== 'string') {
           return;
         }
-        console.log('calledMethod', propName);
-        const [calledMethod] = queryDictionary.filter(item => item.methodOriginalName === propName);
-        const { action } = calledMethod;
-
-        const instancesName = instancesAndMethods
-          .map(item => item.instanceName)
-          .filter(item => item === target.constructor.name);
-
-        // console.log('instance', attributes);
-        const [attributesToPass] = attributes
-          .filter(item => item.instanceName === instancesName[0])
-          .map(item => item.attributes);
+        const {
+          constructor: { name }
+        } = target;
+        const targetInstanceData = instancesAndMethods[name];
+        const { attributes } = targetInstanceData;
 
         let getQuery;
-        switch (action) {
+        switch (propName) {
           case 'insert':
-            getQuery = generateQuery.call(self, [
-              calledMethod,
-              args,
-              instancesName,
-              attributesToPass
-            ]);
+            getQuery = generateQuery.call(self, [propName, args, name, attributes]);
             return target[propName](getQuery);
           case 'update':
-            getQuery = generateQuery.call(self, [
-              calledMethod,
-              args,
-              instancesName,
-              attributesToPass
-            ]);
+            getQuery = generateQuery.call(self, [propName, args, name, attributes]);
             return target[propName](getQuery);
           case 'delete':
-            getQuery = generateQuery.call(self, [calledMethod, args, instancesName]);
+            getQuery = generateQuery.call(self, [propName, args, name]);
             // console.log('getQuery:', getQuery);
             return target[propName](getQuery);
           case 'get':
-            getQuery = generateQuery.call(self, [calledMethod, args, instancesName]);
+            getQuery = generateQuery.call(self, [propName, args, name]);
             return target[propName](getQuery);
           default:
             return null;
@@ -263,6 +247,61 @@ QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumn
     acc += `${item}`;
     return acc;
   }, 'SELECT ');
+};
+
+/**
+ * Returns the query to use on the database instance
+ * @param string typeOfQuery => insert, update, delete, get
+ * @param dataToInsert => Array or Object
+ * @param [instanceName]
+ * @param [attributes]
+ */
+QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
+  typeOfQuery,
+  dataToInsert,
+  instanceName,
+  attributes = []
+]) {
+  // console.log('typeOfQuery', attributes);
+  const [dataPassed] = dataToInsert;
+  const dataKeys = Object.keys(dataPassed);
+  const attributesQuery = this.buildAttributesQuery(attributes, dataKeys);
+  console.log('attributes', attributesQuery, dataKeys);
+  const parentAttributes = `(${attributesQuery})`;
+  const { action } = typeOfQuery;
+  const [tableName] = instanceName;
+  let data;
+  let id;
+
+  let processedDataToInsert;
+  if (action !== 'delete') {
+    [data, id] = dataToInsert;
+    processedDataToInsert = this.processDataByInspection(data);
+  } else {
+    [id] = dataToInsert;
+  }
+
+  let query;
+  switch (action) {
+    case 'insert':
+      query = `INSERT INTO ${tableName} ${parentAttributes} VALUES (${processedDataToInsert}) RETURNING *;`;
+      return query;
+    case 'update':
+      const setColumnsSentences = this.generateColumnsSentences(data);
+      query = `UPDATE ${tableName} ${setColumnsSentences} WHERE id = '${id}';`;
+      return query;
+    case 'delete':
+      query = `DELETE FROM ${tableName} WHERE id = '${id}';`;
+      // console.log('QUERY', query);
+      return query;
+    case 'get':
+      const selectColumnsSentences = this.generateColumnsSentences(data);
+      query = `${selectColumnsSentences} FROM ${tableName} WHERE id = '${id}';`;
+      return query;
+    default:
+      null;
+  }
+  return null;
 };
 
 module.exports = QueryBuilderProxy;
