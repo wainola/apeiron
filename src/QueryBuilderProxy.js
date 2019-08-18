@@ -87,7 +87,7 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
   const [dataPassed] = dataToInsert;
   const dataKeys = Object.keys(dataPassed);
   const attributesQuery = this.buildAttributesQuery(attributes, dataKeys);
-  console.log('attributes', attributesQuery, dataKeys);
+  // console.log('attributes', attributesQuery, dataKeys);
   const parentAttributes = `(${attributesQuery})`;
   const { action } = typeOfQuery;
   const [tableName] = instanceName;
@@ -165,31 +165,6 @@ QueryBuilderProxy.prototype.processDataByInspection = function resolveData(data)
 };
 
 /**
- * Return the data type of the arguments passed to the instance method
- * @param [data] array of data
- * @param {object}
- * @param string
- * @returns string with the data type of the argument passed
- */
-QueryBuilderProxy.prototype.checkDataType = function resolveDataType(data) {
-  if (Array.isArray(data)) {
-    return 'array';
-  }
-  return typeof data;
-};
-
-/**
- * Return the last item of an array.
- * @param [columns] array of columns values
- * @param [values] array of values
- * @returns [item] the last item of the passed array
- */
-QueryBuilderProxy.prototype.getLastItemOfArray = function resolveLastItem(arr) {
-  console.log('arr:', arr);
-  return arr.filter((_, idx, self) => idx === self.length - 1);
-};
-
-/**
  * Return the list of values to user in que DML sentence
  * @param [columns] Array of columns names
  * @param [values] Array of values names
@@ -207,13 +182,32 @@ QueryBuilderProxy.prototype.generateListForQuery = function resolveListQuery(dat
   // console.log('data, context', data, context);
   const [lastItem] = this.getLastItemOfArray(data);
   return data.reduce((acc, item) => {
-    if (item === lastItem) {
-      acc += context !== 'values' ? `${item}` : `'${item}'`;
-      return acc;
-    }
-    acc += context !== 'values' ? `${item}, ` : `'${item}', `;
+    acc += this.stringGeneratorBasedOnType(context, item, lastItem);
+    console.log('acc::', acc);
     return acc;
   }, '');
+};
+
+QueryBuilderProxy.prototype.stringGeneratorBasedOnType = function resolveStringGenerator(
+  context,
+  item,
+  isLastItem
+) {
+  const itemType = typeof item;
+  switch (itemType) {
+    case 'string':
+      if (item === isLastItem) {
+        return context !== 'values' ? `${item}` : `'${item}`;
+      }
+      return context !== 'values' ? `${item}, ` : `'${item}', `;
+    case 'number':
+      if (item === isLastItem) {
+        return context !== 'values' ? `${item}` : `${item}`;
+      }
+      return context !== 'values' ? `${item}, ` : `${item}, `;
+    default:
+      return null;
+  }
 };
 
 /**

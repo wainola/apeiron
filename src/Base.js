@@ -119,4 +119,29 @@ Base.prototype.validateInstance = function resolveInstanceBasedOnString(instance
   return namedInstance;
 };
 
+/**
+ * Return the data type of the arguments passed to the instance method
+ * @param [data] array of data
+ * @param {object}
+ * @param string
+ * @returns string with the data type of the argument passed
+ */
+Base.prototype.checkDataType = function resolveDataType(data) {
+  if (Array.isArray(data)) {
+    return 'array';
+  }
+  return typeof data;
+};
+
+/**
+ * Return the last item of an array.
+ * @param [columns] array of columns values
+ * @param [values] array of values
+ * @returns [item] the last item of the passed array
+ */
+Base.prototype.getLastItemOfArray = function resolveLastItem(arr) {
+  console.log('arr:', arr);
+  return arr.filter((_, idx, self) => idx === self.length - 1);
+};
+
 module.exports = Base;
