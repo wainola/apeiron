@@ -8,6 +8,9 @@
   },
   "author": "Wainola",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/wainola/apeiron"
+  },
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "eslint": "^5.3.0",

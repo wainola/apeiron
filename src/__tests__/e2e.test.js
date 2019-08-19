@@ -1,5 +1,5 @@
 const util = require('util');
-const Injector = require('../Injector');
+const Injector = require('../index');
 
 class Car {
   constructor() {
