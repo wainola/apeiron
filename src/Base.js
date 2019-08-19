@@ -26,7 +26,8 @@ Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(inst
     return {
       ...acc,
       [instanceName]: {
-        methods: [...filterByMethodNames]
+        methods: [...filterByMethodNames],
+        instance: item
       }
     };
   }, {});
@@ -63,7 +64,6 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(
   originalInstance,
   instancesAndMethods
 ) {
-  // console.log('originalInstances', originalInstance);
   const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
   // console.log('hasattrs', originalInstance);
   try {
@@ -111,6 +111,37 @@ Base.prototype.setupAttributesOnInstancesAndMethodsTree = function resolveAttrib
     return acc;
   }, {});
   return newInstancesAndMethods;
+};
+
+Base.prototype.validateInstance = function resolveInstanceBasedOnString(instanceName) {
+  const instancesKeys = Object.keys(this.instancesAndMethods);
+  const [namedInstance] = instancesKeys.filter(item => item.toLowerCase().includes(instanceName));
+  return namedInstance;
+};
+
+/**
+ * Return the data type of the arguments passed to the instance method
+ * @param [data] array of data
+ * @param {object}
+ * @param string
+ * @returns string with the data type of the argument passed
+ */
+Base.prototype.checkDataType = function resolveDataType(data) {
+  if (Array.isArray(data)) {
+    return 'array';
+  }
+  return typeof data;
+};
+
+/**
+ * Return the last item of an array.
+ * @param [columns] array of columns values
+ * @param [values] array of values
+ * @returns [item] the last item of the passed array
+ */
+Base.prototype.getLastItemOfArray = function resolveLastItem(arr) {
+  console.log('arr:', arr);
+  return arr.filter((_, idx, self) => idx === self.length - 1);
 };
 
 module.exports = Base;

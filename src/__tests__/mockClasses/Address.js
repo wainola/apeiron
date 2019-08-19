@@ -16,6 +16,6 @@ module.exports = class Address{
     }
 
     async get(params, id){
-        
+        return params
     }
 }
