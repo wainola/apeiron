@@ -1,10 +1,10 @@
 const util = require('util');
 const QueryBuilderProxy = require('../QueryBuilderProxy');
 const Base = require('../Base');
-const Address = require('./mockClasses/Address');
-const Client = require('./mockClasses/Client');
-const Customer = require('./mockClasses/Customer');
-const Invoice = require('./mockClasses/Invoice');
+const Address = require('../__mocks__/Address');
+const Client = require('../__mocks__/Client');
+const Customer = require('../__mocks__/Customer');
+const Invoice = require('../__mocks__/Invoice');
 
 describe('QueryBuilder test', () => {
   it('should be instance of base', () => {

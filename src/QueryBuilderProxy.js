@@ -16,7 +16,6 @@ QueryBuilderProxy.prototype = Object.create(Base.prototype);
  * Return a handler object with a get trap to intersect the property accesor of an instance
  */
 QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler() {
-  console.log('this:', this);
   const { instancesAndMethods, generateQuery } = this;
   // console.log('queryDic', queryDictionary, instancesAndMethods, attributes);
   const self = this;
