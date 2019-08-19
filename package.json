@@ -4,7 +4,8 @@
   "description": "Metaprogramatic query builder, sort of dirty implementation of active recrod pattern",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest src/__tests__ --watchAll"
+    "test:debug": "jest src/__tests__ --watchAll",
+    "test": "jest src --colors --coverage"
   },
   "author": "Wainola",
   "license": "ISC",
