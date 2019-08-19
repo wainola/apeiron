@@ -183,7 +183,6 @@ QueryBuilderProxy.prototype.generateListForQuery = function resolveListQuery(dat
   const [lastItem] = this.getLastItemOfArray(data);
   return data.reduce((acc, item) => {
     acc += this.stringGeneratorBasedOnType(context, item, lastItem);
-    console.log('acc::', acc);
     return acc;
   }, '');
 };
@@ -270,13 +269,7 @@ QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumn
     const lastItemStringify = JSON.stringify(this.getLastItemOfArray(foldedEntries)[0]);
     return foldedEntries.reduce((acc, item) => {
       const itemStringified = JSON.stringify(item);
-      if (itemStringified !== lastItemStringify) {
-        // console.log(item);
-        acc += `${item[0]}='${item[1]}', `;
-        return acc;
-      }
-
-      acc += `${item[0]}='${item[1]}'`;
+      acc += this.stringGeneratorForSetColumns(item, lastItemStringify, itemStringified);
       return acc;
     }, 'SET ');
   }
@@ -291,6 +284,28 @@ QueryBuilderProxy.prototype.generateColumnsSentences = function resolveSetColumn
     acc += `${item}`;
     return acc;
   }, 'SELECT ');
+};
+
+QueryBuilderProxy.prototype.stringGeneratorForSetColumns = function resolveStringForSetColumns(
+  item,
+  lastItem,
+  currentItemStringified
+) {
+  const itemToUpdateType = typeof item[1];
+  switch (itemToUpdateType) {
+    case 'string':
+      if (lastItem !== currentItemStringified) {
+        return `${item[0]}='${item[1]}', `;
+      }
+      return `${item[0]}='${item[1]}'`;
+    case 'number':
+      if (lastItem !== currentItemStringified) {
+        return `${item[0]}=${item[1]}, `;
+      }
+      return `${item[0]}=${item[1]}`;
+    default:
+      return null;
+  }
 };
 
 module.exports = QueryBuilderProxy;

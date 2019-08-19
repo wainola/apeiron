@@ -61,7 +61,7 @@ describe('QueryBuilder test', () => {
       email: 'john@doe.com',
       fk_address_id: 1
     });
-    const exps = `insert into client (name, lastname, email, fk_address_id) values ('john', 'doe', 'john@doe.com', '1') returning *;`;
+    const exps = `insert into client (name, lastname, email, fk_address_id) values ('john', 'doe', 'john@doe.com', 1) returning *;`;
     expect(insertionQuery.toLowerCase()).toEqual(exps);
   });
   it('should build a updation query if the proxied class use the update method', async () => {
@@ -100,7 +100,7 @@ describe('QueryBuilder test', () => {
     const exps = `select lat, long from address where id = '1001';`;
     expect(selectionQuery.toLowerCase()).toEqual(exps);
   });
-  it.only("should generate an insertion or updation query, given a number type on the parametesr. The uptation or insertion query should reflect on it' semantics that we are using a number type on the sentence", async () => {
+  it("should generate an insertion or updation query, given a number type on the parametesr. The uptation or insertion query should reflect on it' semantics that we are using a number type on the sentence", async () => {
     const address = new Address();
     const client = new Client();
     const customer = new Customer();
@@ -122,6 +122,9 @@ describe('QueryBuilder test', () => {
       },
       1234
     );
-    console.log(updationQuery);
+    const exps = `update invoice set num_order=12345, client_id='someid123', amount=120000 where id = '1234';`;
+    const expsInsert = `insert into address (address, lat, long) values ('some address', 1234567, 987654) returning *;`;
+    expect(updationQuery.toLowerCase()).toEqual(exps);
+    expect(insertionQuery.toLowerCase()).toEqual(expsInsert);
   });
 });
