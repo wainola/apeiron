@@ -1,14 +1,31 @@
 function Base(instances) {
   try {
-    if (!Array.isArray(instances)) {
-      throw new Error('No array of instances passed. You must pass an array');
+    const typeofInstances = this.checkTypeOfParam(instances);
+    if (typeofInstances !== 'array' && this.checkIfObjectIsEmpty(instances)) {
+      throw new Error('No instances passed');
     }
     this.internalHandler = null;
-    this.instancesAndMethods = this.setInstancesAndMethods(instances);
+    this.instancesAndMethods =
+      typeofInstances !== 'array'
+        ? this.setInstanceAndReturnInstanceProxied(instances)
+        : this.setInstancesAndMethods(instances);
   } catch (error) {
     return error;
   }
 }
+
+Base.prototype.checkTypeOfParam = function resolveTypeOfParam(instances) {
+  if (Array.isArray(instances)) {
+    return 'array';
+  }
+  return 'object';
+};
+
+Base.prototype.checkIfObjectIsEmpty = function resolveIfObjectIsEmpty(instance) {
+  return Object.keys(instance).length === 0 && instance.constructor === Object;
+};
+
+Base.prototype.setInstanceAndReturnInstanceProxied = function resolveProxiedInstance(instance) {};
 
 Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(instances) {
   const instancesSetup = instances.reduce((acc, item) => {

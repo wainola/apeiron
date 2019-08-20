@@ -11,7 +11,6 @@ function QueryBuilderProxy(instances = null) {
 }
 
 QueryBuilderProxy.prototype = Object.create(Base.prototype);
-
 /**
  * Return a handler object with a get trap to intersect the property accesor of an instance
  */
