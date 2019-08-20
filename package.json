@@ -1,6 +1,6 @@
 {
-  "name": "apeiron",
-  "version": "0.0.1",
+  "name": "meta-apeiron",
+  "version": "1.0.0",
   "description": "Metaprogramatic query builder, sort of dirty implementation of active recrod pattern",
   "main": "src/index.js",
   "scripts": {

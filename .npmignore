@@ -1,0 +1,7 @@
+coverage
+src/__tests__
+azure-pipelines.yml
+jest.config.js
+.prettierrc
+.eslintrc.json
+.vscode
