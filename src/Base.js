@@ -119,7 +119,6 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(
     }
   }
   const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
-  // console.log('hasattrs', originalInstance);
   try {
     if (hasAttributeProperty) {
       const attrs = this.getAtrributesFromInstanceCollection(originalInstance);

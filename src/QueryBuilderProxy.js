@@ -16,7 +16,6 @@ QueryBuilderProxy.prototype = Object.create(Base.prototype);
  */
 QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler() {
   const { instancesAndMethods, generateQuery } = this;
-  // console.log('queryDic', queryDictionary, instancesAndMethods, attributes);
   const self = this;
 
   const internalHandlerObject = {
@@ -44,7 +43,6 @@ QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler()
             return target[propName](getQuery);
           case 'delete':
             getQuery = generateQuery.call(self, [propName, args, name]);
-            // console.log('getQuery:', getQuery);
             return target[propName](getQuery);
           case 'get':
             getQuery = generateQuery.call(self, [propName, args, name]);
@@ -102,11 +100,9 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
   instanceName,
   attributes = []
 ]) {
-  // console.log('typeOfQuery', attributes);
   const [dataPassed] = dataToInsert;
   const dataKeys = Object.keys(dataPassed);
   const attributesQuery = this.buildAttributesQuery(attributes, dataKeys);
-  // console.log('attributes', attributesQuery, dataKeys);
   const parentAttributes = `(${attributesQuery})`;
   const { action } = typeOfQuery;
   const [tableName] = instanceName;
@@ -132,7 +128,6 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
       return query;
     case 'delete':
       query = `DELETE FROM ${tableName} WHERE id = '${id}';`;
-      // console.log('QUERY', query);
       return query;
     case 'get':
       const selectColumnsSentences = this.generateColumnsSentences(data);
@@ -160,7 +155,6 @@ QueryBuilderProxy.prototype.buildAttributesQuery = function resolveAttributesStr
     return acc;
   }, []);
 
-  // console.log('ATRS:', attributesFiltered);
   return this.generateListForQuery(attributesFiltered, 'columns');
 };
 
@@ -174,7 +168,6 @@ QueryBuilderProxy.prototype.buildAttributesQuery = function resolveAttributesStr
  * return string string in the form of 'something', 'somewhere', ...
  */
 QueryBuilderProxy.prototype.processDataByInspection = function resolveData(data) {
-  // console.log('DATA BY INSPECTION', data);
   const dataType = this.checkDataType(data);
   if (dataType !== 'object') {
     return this.generateListForQuery(data, 'values');
@@ -198,7 +191,6 @@ QueryBuilderProxy.prototype.processDataByInspection = function resolveData(data)
  * TODO: check the string construction if passed a number or other datatype that is not a string
  */
 QueryBuilderProxy.prototype.generateListForQuery = function resolveListQuery(data, context) {
-  // console.log('data, context', data, context);
   const [lastItem] = this.getLastItemOfArray(data);
   return data.reduce((acc, item) => {
     acc += this.stringGeneratorBasedOnType(context, item, lastItem);
@@ -267,7 +259,6 @@ QueryBuilderProxy.prototype.generateQuery = function resolveQuery([
       return query;
     case 'delete':
       query = `DELETE FROM ${instanceName} WHERE id = '${id}';`;
-      // console.log('QUERY', query);
       return query;
     case 'get':
       const selectColumnsSentences = this.generateColumnsSentences(data);

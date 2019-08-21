@@ -1,4 +1,3 @@
-const util = require('util');
 const QueryBuilderProxy = require('./QueryBuilderProxy');
 
 function Injector() {
@@ -15,10 +14,11 @@ Injector.prototype.proxyInstance = function resolveProxiedInstance(dependecyName
     if (dependecyName !== undefined) {
       const proxiedInstance = this.QueryBuilderProxy.setProxy(dependecyName);
       return proxiedInstance;
-    }
-    if (Object.keys(this.QueryBuilderProxy).length !== 0) {
+    } else if (Object.keys(this.QueryBuilderProxy).length !== 0) {
       const proxiedSingleInstance = this.QueryBuilderProxy.setProxyForSingleInstance();
       return proxiedSingleInstance;
+    } else {
+      throw new Error('No dependency name passed');
     }
   } catch (error) {
     return error;
