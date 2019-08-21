@@ -24,4 +24,19 @@ describe('Injector test', () => {
     const proxiedInvoice = Injector.proxyInstance('invoice');
     expect(util.types.isProxy(proxiedInvoice)).toBe(true);
   });
+  it('should setup a proxy after using the chaining method on setDependecy', () => {
+    const invoice = new Invoice();
+    const proxiedInvoice = Injector.setDependency(invoice).proxyInstance();
+    expect(util.types.isProxy(proxiedInvoice)).toBe(true);
+  });
+  it('should setup a proxy after using chaining method on setDependecy and the perform an updation query', async () => {
+    const invoice = new Invoice();
+    const proxiedInvoice = Injector.setDependency(invoice).proxyInstance();
+    const updationQuery = await proxiedInvoice.update(
+      { num_order: 1234567, client_id: 'someid123', amount: 125000 },
+      'otherid123'
+    );
+    const exps = `update invoice set num_order=1234567, client_id='someid123', amount=125000 where id = 'otherid123';`;
+    expect(updationQuery.toLowerCase()).toEqual(exps);
+  });
 });

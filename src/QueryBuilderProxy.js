@@ -63,9 +63,30 @@ QueryBuilderProxy.prototype.setInternalHandler = function setupInternalHandler()
  * Returns a Proxy of the instance passed
  */
 QueryBuilderProxy.prototype.setProxy = function setProxyToInstance(instanceName) {
-  const validateInstanceParam = this.validateInstance(instanceName);
-  const { instance } = this.instancesAndMethods[validateInstanceParam];
-  return new Proxy(instance, this.setInternalHandler());
+  try {
+    if (instanceName !== undefined) {
+      const validateInstanceParam = this.validateInstance(instanceName);
+      const { instance } = this.instancesAndMethods[validateInstanceParam];
+      return new Proxy(instance, this.setInternalHandler());
+    }
+    throw new Error('No instances name was provided');
+  } catch (error) {
+    return error;
+  }
+};
+
+QueryBuilderProxy.prototype.setProxyForSingleInstance = function resolveProxyForSingleInstance() {
+  try {
+    const isInstancesAndMethodsDefined = Object.keys(this.instancesAndMethods);
+    if (!(isInstancesAndMethodsDefined.length > 1)) {
+      const [instanceName] = isInstancesAndMethodsDefined;
+      const instanceToProxy = this.instancesAndMethods[instanceName].instance;
+      return new Proxy(instanceToProxy, this.setInternalHandler());
+    }
+    throw new Error('There is no intenal instance');
+  } catch (error) {
+    return error;
+  }
 };
 
 /**

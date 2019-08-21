@@ -1,3 +1,4 @@
+const util = require('util');
 const QueryBuilderProxy = require('./QueryBuilderProxy');
 
 function Injector() {
@@ -15,10 +16,18 @@ Injector.prototype.proxyInstance = function resolveProxiedInstance(dependecyName
       const proxiedInstance = this.QueryBuilderProxy.setProxy(dependecyName);
       return proxiedInstance;
     }
-    throw new Error('No key passed.');
+    if (Object.keys(this.QueryBuilderProxy).length !== 0) {
+      const proxiedSingleInstance = this.QueryBuilderProxy.setProxyForSingleInstance();
+      return proxiedSingleInstance;
+    }
   } catch (error) {
     return error;
   }
+};
+
+Injector.prototype.setDependency = function resolveDependency(dependency) {
+  this.QueryBuilderProxy = new QueryBuilderProxy(dependency);
+  return this;
 };
 
 module.exports = new Injector();

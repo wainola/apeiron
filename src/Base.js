@@ -108,10 +108,9 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(
         const newSingleInstanceAndMethods = {
           [instanceName]: {
             ...instancesAndMethods[instanceName],
-            attributes
+            attributes: [...attributes]
           }
         };
-
         return newSingleInstanceAndMethods;
       }
       throw new Error('Instances passed has no attributes');
