@@ -105,7 +105,6 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(
       if (attributesInSingleInstance) {
         const { attributes } = originalInstance;
         const instanceName = originalInstance.constructor.name;
-        console.log('ist', originalInstance);
         const newSingleInstanceAndMethods = {
           [instanceName]: {
             ...instancesAndMethods[instanceName],

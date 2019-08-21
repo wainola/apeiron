@@ -33,7 +33,7 @@ describe('Base class test', () => {
       expect(Array.isArray(instancesAndMethods[item].attributes)).toBe(true)
     );
   });
-  it.only('should setup one single instance', () => {
+  it('should setup one single instance', () => {
     const client = new Client();
     const { instancesAndMethods } = new Base(client);
     const instanceKeys = Object.keys(instancesAndMethods.Client);
