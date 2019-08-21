@@ -14,11 +14,20 @@ Injector.prototype.proxyInstance = function resolveProxiedInstance(dependecyName
     if (dependecyName !== undefined) {
       const proxiedInstance = this.QueryBuilderProxy.setProxy(dependecyName);
       return proxiedInstance;
+    } else if (Object.keys(this.QueryBuilderProxy).length !== 0) {
+      const proxiedSingleInstance = this.QueryBuilderProxy.setProxyForSingleInstance();
+      return proxiedSingleInstance;
+    } else {
+      throw new Error('No dependency name passed');
     }
-    throw new Error('No key passed.');
   } catch (error) {
     return error;
   }
+};
+
+Injector.prototype.setDependency = function resolveDependency(dependency) {
+  this.QueryBuilderProxy = new QueryBuilderProxy(dependency);
+  return this;
 };
 
 module.exports = new Injector();

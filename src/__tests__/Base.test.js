@@ -33,4 +33,10 @@ describe('Base class test', () => {
       expect(Array.isArray(instancesAndMethods[item].attributes)).toBe(true)
     );
   });
+  it('should setup one single instance', () => {
+    const client = new Client();
+    const { instancesAndMethods } = new Base(client);
+    const instanceKeys = Object.keys(instancesAndMethods.Client);
+    expect(instanceKeys).toEqual(['methods', 'instance', 'attributes']);
+  });
 });
