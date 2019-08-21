@@ -7,7 +7,7 @@ function Base(instances) {
     this.internalHandler = null;
     this.instancesAndMethods =
       typeofInstances !== 'array'
-        ? this.setInstanceAndReturnInstanceProxied(instances)
+        ? this.setInstanceAndMethodsForOneInstance(instances)
         : this.setInstancesAndMethods(instances);
   } catch (error) {
     return error;
@@ -25,7 +25,25 @@ Base.prototype.checkIfObjectIsEmpty = function resolveIfObjectIsEmpty(instance) 
   return Object.keys(instance).length === 0 && instance.constructor === Object;
 };
 
-Base.prototype.setInstanceAndReturnInstanceProxied = function resolveProxiedInstance(instance) {};
+Base.prototype.setInstanceAndMethodsForOneInstance = function resolveInstanceAndMethods(instance) {
+  const instancePrototype = this.getPrototypesOfInstances(instance);
+  const instanceInternalProperties = this.getInternalPropertiesDescriptorOfPrototype(
+    instancePrototype
+  );
+  const descriptorEntries = this.getEntriesOfPrototype(instanceInternalProperties);
+  const arrayOfPropertiesNames = this.filterOnlyStrings(descriptorEntries);
+  const arrayOfMethodNames = this.filterByMethodNames(arrayOfPropertiesNames);
+  const intanceName = instance.constructor.name;
+  const setupInstance = {
+    [intanceName]: {
+      methods: [...arrayOfMethodNames],
+      instance
+    }
+  };
+
+  const setupInstanceAndAttributes = this.getAttributes(instance, setupInstance);
+  return setupInstanceAndAttributes;
+};
 
 Base.prototype.setInstancesAndMethods = function resolveInstancesAndMethods(instances) {
   const instancesSetup = instances.reduce((acc, item) => {
@@ -81,6 +99,27 @@ Base.prototype.getAttributes = function resolveAttributesByInstances(
   originalInstance,
   instancesAndMethods
 ) {
+  if (!Array.isArray(originalInstance)) {
+    const attributesInSingleInstance = 'attributes' in originalInstance;
+    try {
+      if (attributesInSingleInstance) {
+        const { attributes } = originalInstance;
+        const instanceName = originalInstance.constructor.name;
+        console.log('ist', originalInstance);
+        const newSingleInstanceAndMethods = {
+          [instanceName]: {
+            ...instancesAndMethods[instanceName],
+            attributes
+          }
+        };
+
+        return newSingleInstanceAndMethods;
+      }
+      throw new Error('Instances passed has no attributes');
+    } catch (error) {
+      return error;
+    }
+  }
   const hasAttributeProperty = originalInstance.every(item => 'attributes' in item);
   // console.log('hasattrs', originalInstance);
   try {
