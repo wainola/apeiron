@@ -33,6 +33,16 @@ describe('Base class test', () => {
       expect(Array.isArray(instancesAndMethods[item].attributes)).toBe(true)
     );
   });
+  it('should setup the instance attribute on all the instances', () => {
+    const address = new Address();
+    const client = new Client();
+    const customer = new Customer();
+    const invoice = new Invoice();
+
+    const { instancesAndMethods } = new Base([address, client, customer, invoice]);
+    const instancesKeys = Object.keys(instancesAndMethods);
+    instancesKeys.forEach(item => expect(instancesAndMethods[item].instance).not.toBe(undefined));
+  });
   it('should setup one single instance', () => {
     const client = new Client();
     const { instancesAndMethods } = new Base(client);
