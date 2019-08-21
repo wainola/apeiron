@@ -207,7 +207,7 @@ QueryBuilderProxy.prototype.stringGeneratorBasedOnType = function resolveStringG
   switch (itemType) {
     case 'string':
       if (item === isLastItem) {
-        return context !== 'values' ? `${item}` : `'${item}`;
+        return context !== 'values' ? `${item}` : `'${item}'`;
       }
       return context !== 'values' ? `${item}, ` : `'${item}', `;
     case 'number':
