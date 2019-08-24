@@ -168,7 +168,9 @@ Base.prototype.setupAttributesOnInstancesAndMethodsTree = function resolveAttrib
 
 Base.prototype.validateInstance = function resolveInstanceBasedOnString(instanceName) {
   const instancesKeys = Object.keys(this.instancesAndMethods);
-  const [namedInstance] = instancesKeys.filter(item => item.toLowerCase().includes(instanceName));
+  const [namedInstance] = instancesKeys.filter(
+    item => item.toLowerCase() === instanceName.toLowerCase()
+  );
   return namedInstance;
 };
 
